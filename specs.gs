@@ -1,52 +1,45 @@
 var specs_ = {
-  test_new_Table: function(helper) {
-    var sheet = helper.getSheetByName('fixture');
-    var ttable = new Tamotsu.Table(sheet);
-    GSUnit.assertEquals(sheet, ttable.sheet);
+  test_new_Table: function(h) {
+    var Fixture = h.defineFixture();
+    GSUnit.assertEquals('fixture', Fixture.sheet.getName());
   },
   
-  test_columns: function(helper) {
-    var ttable = helper.newFixtureTable();
-    GSUnit.assertArrayEquals(['#', 'First Name', 'Last Name'], ttable.columns());
+  test_columns: function(h) {
+    var Fixture = h.defineFixture();
+    GSUnit.assertArrayEquals(['#', 'First Name', 'Last Name'], Fixture.columns());
   },
   
-  test_first: function(helper) {
-    var ttable = helper.newFixtureTable();
-    var first = ttable.first();
+  test_first: function(h) {
+    var Fixture = h.defineFixture();
+    var first = Fixture.first();
     GSUnit.assertEquals(1, first['#'])
     GSUnit.assertEquals('Charles', first['First Name'])
     GSUnit.assertEquals('Bartowski ', first['Last Name'])
   },
   
-  test_last: function(helper) {
-    var ttable = helper.newFixtureTable();
-    var last = ttable.last();
+  test_last: function(h) {
+    var Fixture = h.defineFixture();
+    var last = Fixture.last();
     GSUnit.assertEquals(3, last['#'])
     GSUnit.assertEquals('John', last['First Name'])
     GSUnit.assertEquals('Casey', last['Last Name'])
   },
   
-  test_all: function(helper) {
-    var ttable = helper.newFixtureTable();
-    ttable.all().forEach(function(record, i) {
+  test_all: function(h) {
+    var Fixture = h.defineFixture();
+    Fixture.all().forEach(function(record, i) {
       GSUnit.assertEquals(i + 1, record['#'])
     });
   },
 };
 
 var Helper_ = (function() {
-  var Helper_ = function() {
-    this.app = SpreadsheetApp.getActive();
-  };
+  var Helper_ = function() {};
   
   var _p = Helper_.prototype;
   
-  _p.getSheetByName = function(name) {
-    return this.app.getSheetByName(name);
-  };
-  
-  _p.newFixtureTable = function(options) {
-    return new Tamotsu.Table(this.getSheetByName('fixture'), options || {});
+  _p.defineFixture = function() {
+    return Tamotsu.Table.define({ sheetName: 'fixture' });
   };
 
   return Helper_;
@@ -54,6 +47,7 @@ var Helper_ = (function() {
 
 
 function runAll() {
+  Tamotsu.init(SpreadsheetApp.getActive());
   var helper = new Helper_();
   for (var spec in specs_) {
     specs_[spec](helper);
