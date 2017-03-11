@@ -25,6 +25,13 @@ var specs_ = {
     GSUnit.assertEquals('John', last['First Name'])
     GSUnit.assertEquals('Casey', last['Last Name'])
   },
+  
+  test_all: function(helper) {
+    var ttable = helper.newFixtureTable();
+    ttable.all().forEach(function(record, i) {
+      GSUnit.assertEquals(i + 1, record['#'])
+    });
+  },
 };
 
 var Helper_ = (function() {
