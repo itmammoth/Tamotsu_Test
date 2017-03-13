@@ -9,6 +9,7 @@ var specs_ = {
     GSUnit.assertArrayEquals(['#', 'First Name', 'Last Name'], Fixture.columns());
   },
   
+  // TODO: +データが無かった場合
   test_first: function(h) {
     var Fixture = h.defineFixture();
     var first = Fixture.first();
@@ -17,6 +18,7 @@ var specs_ = {
     GSUnit.assertEquals('Bartowski ', first['Last Name'])
   },
   
+  // TODO: +データが無かった場合
   test_last: function(h) {
     var Fixture = h.defineFixture();
     var last = Fixture.last();
@@ -25,6 +27,7 @@ var specs_ = {
     GSUnit.assertEquals('Casey', last['Last Name'])
   },
   
+  // TODO: +データが無かった場合
   test_all: function(h) {
     var Fixture = h.defineFixture();
     Fixture.all().forEach(function(record, i) {
@@ -47,7 +50,7 @@ var Helper_ = (function() {
 
 
 function runAll() {
-  Tamotsu.init(SpreadsheetApp.getActive());
+  Tamotsu.initialize(SpreadsheetApp.getActive());
   var helper = new Helper_();
   for (var spec in specs_) {
     specs_[spec](helper);
