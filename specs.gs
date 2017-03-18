@@ -1,9 +1,20 @@
 var specs_ = {
-  test_define_table: function(h) {
+  test_table_define: function(h) {
     var Fixture1 = Tamotsu.Table.define({ sheetName: 'Agents' });
     GSUnit.assertEquals('Agents', Fixture1.sheet.getName());
     var Fixture2 = Tamotsu.Table.define({ sheetName: 'No data' });
     GSUnit.assertEquals('No data', Fixture2.sheet.getName());
+  },
+  
+  test_table_define_with_mixin: function() {
+    var Fixture = Tamotsu.Table.define({
+      sheetName: 'Agents',
+      mixin: {
+        fullName: function() { return this['First Name'] + ' ' + this['Last Name']; },
+      },
+    });
+    var fixture = Fixture.first();
+    GSUnit.assertEquals('Charles Bartowski', fixture.fullName());
   },
   
   test_columns: function(h) {
