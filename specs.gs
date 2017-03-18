@@ -204,7 +204,7 @@ var Helper_ = (function() {
 
 function runAll() {
   var ss = SpreadsheetApp.getActive();
-  Tamotsu.register(ss);
+  Tamotsu.initialize(ss);
   var helper = new Helper_(ss);
   for (var spec in specs_) {
     specs_[spec](helper);
