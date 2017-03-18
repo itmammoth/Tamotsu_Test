@@ -11,6 +11,11 @@ var specs_ = {
     GSUnit.assertArrayEquals(['#', 'First Name', 'Last Name', 'Gender'], Fixture.columns());
   },
   
+  test_columnABCFor: function(h) {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    GSUnit.assertEquals('B', Fixture.columnABCFor('First Name'));
+  },
+  
   test_first_when_having_data: function(h) {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
     var fixture = Fixture.first();
