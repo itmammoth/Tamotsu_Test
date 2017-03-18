@@ -8,15 +8,16 @@ var specs_ = {
   
   test_columns: function(h) {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
-    GSUnit.assertArrayEquals(['#', 'First Name', 'Last Name'], Fixture.columns());
+    GSUnit.assertArrayEquals(['#', 'First Name', 'Last Name', 'Gender'], Fixture.columns());
   },
   
   test_first_when_having_data: function(h) {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
     var fixture = Fixture.first();
     GSUnit.assertEquals(1, fixture['#'])
-    GSUnit.assertEquals('Charles', fixture['First Name'])
+    GSUnit.assertEquals('Charles',   fixture['First Name'])
     GSUnit.assertEquals('Bartowski', fixture['Last Name'])
+    GSUnit.assertEquals('Male',      fixture['Gender'])
   },
   
   test_first_when_no_data: function(h) {
@@ -28,8 +29,9 @@ var specs_ = {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
     var fixture = Fixture.last();
     GSUnit.assertEquals(3, fixture['#']);
-    GSUnit.assertEquals('John', fixture['First Name']);
+    GSUnit.assertEquals('John',  fixture['First Name']);
     GSUnit.assertEquals('Casey', fixture['Last Name']);
+    GSUnit.assertEquals('Male',  fixture['Gender']);
   },
   
   test_last_when_no_data: function(h) {
@@ -54,24 +56,26 @@ var specs_ = {
     var fixture = new Fixture({ 'First Name': 'Johnny', 'Last Name': 'Rotten', 'Invalid attr': 'ignore it' });
     GSUnit.assertEquals('Johnny', fixture['First Name']);
     GSUnit.assertEquals('Rotten', fixture['Last Name']);
+    GSUnit.assertUndefined(fixture['Gender']);
     GSUnit.assertUndefined(fixture['Invalid attr']);
   },
   
   test_create: function(h) {
-    h.withRollback('Agents', function(sheetName) {
+    h.withCopied('Agents', function(sheetName) {
       var Fixture = Tamotsu.Table.define({ sheetName: sheetName });
-      var fixture = new Fixture({ 'First Name': 'Morgan', 'Last Name': 'Grimes' });
+      var fixture = new Fixture({ 'First Name': 'Morgan', 'Last Name': 'Grimes', 'Gender': 'Male' });
       fixture.save();
       var sheet = h.ss.getSheetByName(sheetName);
-      var values = sheet.getRange('A5:C5').getValues()[0];
+      var values = sheet.getRange('A5:D5').getValues()[0];
       GSUnit.assertEquals(4, values[0]);
       GSUnit.assertEquals('Morgan', values[1]);
       GSUnit.assertEquals('Grimes', values[2]);
+      GSUnit.assertEquals('Male',   values[3]);
     });
   },
   
   test_update: function(h) {
-    h.withRollback('Agents', function(sheetName) {
+    h.withCopied('Agents', function(sheetName) {
       var Fixture = Tamotsu.Table.define({ sheetName: sheetName });
       var fixture = Fixture.first();
       fixture['First Name'] = 'Johnny';
@@ -85,15 +89,87 @@ var specs_ = {
   },
   
   test_destroy: function(h) {
-    h.withRollback('Agents', function(sheetName) {
+    h.withCopied('Agents', function(sheetName) {
       var Fixture = Tamotsu.Table.define({ sheetName: sheetName });
       var fixture = Fixture.first();
       fixture.destroy();
       fixture = Fixture.first();
       GSUnit.assertEquals(2, fixture['#'])
-      GSUnit.assertEquals('Sarah', fixture['First Name'])
+      GSUnit.assertEquals('Sarah',  fixture['First Name'])
       GSUnit.assertEquals('Walker', fixture['Last Name'])
+      GSUnit.assertEquals('Female', fixture['Gender'])
     });
+  },
+  
+  test_where_then_get_all: function(h) {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    var fixtures = Fixture
+      .where(function(agent) { return agent['Gender'] === 'Male'; })
+      .all();
+    GSUnit.assertEquals(2, fixtures.length);
+    GSUnit.assertEquals('Charles', fixtures[0]['First Name']);
+    GSUnit.assertEquals('John',    fixtures[1]['First Name']);
+  },
+  
+  test_where_no_result: function(h) {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    var fixtures = Fixture
+      .where(function(agent) { return agent['First Name'] === 'Devon'; })
+      .all();
+    GSUnit.assertArrayEquals([], fixtures);
+  },
+  
+  test_where_chained_predicates: function(h) {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    var fixtures = Fixture
+      .where(function(agent) { return agent['Gender'] === 'Male'; })
+      .where(function(agent) { return agent['First Name'].indexOf('a') > -1; })
+      .all();
+    GSUnit.assertEquals(1, fixtures.length);
+    GSUnit.assertEquals('Charles', fixtures[0]['First Name']);
+  },
+  
+  test_where_then_update: function(h) {
+    h.withCopied('Agents', function(sheetName) {
+      var Fixture = Tamotsu.Table.define({ sheetName: sheetName });
+      var fixture = Fixture
+        .where(function(agent) { return agent['Gender'] === 'Female'; })
+        .all()[0];
+      fixture['First Name'] = 'Eleanor';
+      fixture['Last Name'] = 'Bartowski';
+      fixture.save();
+      var sheet = h.ss.getSheetByName(sheetName);
+      var values = sheet.getRange('B3:C3').getValues()[0];
+      GSUnit.assertEquals('Eleanor',   values[0]);
+      GSUnit.assertEquals('Bartowski', values[1]);
+    });
+  },
+  
+  test_where_then_get_last: function(h) {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    var fixture = Fixture
+      .where(function(agent) { return agent['Gender'] === 'Male'; })
+      .first();
+    GSUnit.assertEquals('Charles', fixture['First Name']);
+  },
+  
+  test_where_then_get_last: function(h) {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    var fixture = Fixture
+      .where(function(agent) { return agent['Gender'] === 'Male'; })
+      .last();
+    GSUnit.assertEquals('John', fixture['First Name']);
+  },
+  
+  test_order_then_get_all: function(h) {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    var fixtures = Fixture
+      .order(h.orderByFirstNameAsc)
+      .all();
+    GSUnit.assertEquals(3, fixtures.length);
+    GSUnit.assertEquals('Charles', fixtures[0]['First Name']);
+    GSUnit.assertEquals('John',    fixtures[1]['First Name']);
+    GSUnit.assertEquals('Sarah',   fixtures[2]['First Name']);
   },
 };
 
@@ -104,13 +180,17 @@ var Helper_ = (function() {
   
   var _p = Helper_.prototype;
   
-  _p.withRollback = function(name, spec) {
+  _p.withCopied = function(name, spec) {
     var sheet = this.ss.getSheetByName(name).copyTo(this.ss);
     try {
       spec(sheet.getName());
     } finally {
       this.ss.deleteSheet(sheet)
     }
+  };
+  
+  _p.orderByFirstNameAsc = function(t1, t2) {
+    return t1['First Name'] < t2['First Name'] ? -1 : 1;
   };
   
   return Helper_;
