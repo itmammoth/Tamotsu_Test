@@ -23,6 +23,11 @@ var cases_ = function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
     deepEqual(['#', 'First Name', 'Last Name', 'Gender'], Fixture.columns());
   });
+
+  test('columnIndexOf', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    deepEqual(3, Fixture.columnIndexOf('Gender'));
+  });
   
   test('columnABCFor',function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
@@ -69,6 +74,11 @@ var cases_ = function() {
     deepEqual([], Fixture.all());
   });
   
+  test('pluck', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    deepEqual(['Bartowski', 'Walker', 'Casey'], Fixture.pluck('Last Name'));
+  });
+  
   test('new', function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
     var fixture = new Fixture({ 'First Name': 'Johnny', 'Last Name': 'Rotten', 'Invalid attr': 'ignore it' });
@@ -81,13 +91,13 @@ var cases_ = function() {
   test('create', function() {
     useFixture_('Agents', function(sheet) {
       var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
-      var fixture = new Fixture({ 'First Name': 'Morgan', 'Last Name': 'Grimes', 'Gender': 'Male' });
+      var fixture = new Fixture({ 'First Name': 'Morgan', 'Last Name': 'Grimes' });
       fixture.save();
       var values = sheet.getRange('A5:D5').getValues()[0];
       equal(4, values[0]);
       equal('Morgan', values[1]);
       equal('Grimes', values[2]);
-      equal('Male',   values[3]);
+      equal('',       values[3]);
     });
   });
   
@@ -143,6 +153,15 @@ var cases_ = function() {
       .all();
     equal(1, fixtures.length);
     equal('Charles', fixtures[0]['First Name']);
+  });
+  
+  test('where then pluck', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    var genders = Fixture
+      .where(function(agent) { return agent['Gender'] === 'Male'; })
+      .pluck('Gender');
+    equal(2, genders.length);
+    deepEqual(['Male', 'Male'], genders);
   });
   
   test('where then update', function() {
