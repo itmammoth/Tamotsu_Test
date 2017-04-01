@@ -1,5 +1,11 @@
 QUnit.helpers(this);
 var ss_ = SpreadsheetApp.getActive();
+Tamotsu.onInitialized(function(ss) {
+  Logger.log('passed1');
+});
+Tamotsu.onInitialized(function(ss) {
+  Logger.log('passed2');
+});
 
 function doGet(e) {
   Tamotsu.initialize(ss_);
