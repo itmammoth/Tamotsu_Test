@@ -109,7 +109,17 @@ var cases_ = function() {
   
   test('sum', function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
-    deepEqual(Fixture.sum('Salary'), 600);
+    equal(Fixture.sum('Salary'), 600);
+  });
+  
+  test('max', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    equal(Fixture.max('Salary'), 300);
+  });
+  
+  test('min', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    equal(Fixture.min('Salary'), 100);
   });
   
   test('new', function() {
@@ -206,6 +216,22 @@ var cases_ = function() {
       .where(function(agent) { return agent['Gender'] === 'Male'; })
       .sum('Salary');
     equal(total, 300);
+  });
+  
+  test('where then max', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    var total = Fixture
+      .where(function(agent) { return agent['Gender'] === 'Male'; })
+      .max('Salary');
+    equal(total, 200);
+  });
+  
+  test('where then min', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    var total = Fixture
+      .where(function(agent) { return agent['Gender'] === 'Male'; })
+      .min('Salary');
+    equal(total, 100);
   });
   
   test('where then update', function() {
