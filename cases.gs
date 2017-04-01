@@ -24,6 +24,13 @@ var cases_ = function() {
     deepEqual(['#', 'First Name', 'Last Name', 'Gender'], Fixture.columns());
   });
 
+  test('columns by cache', function() {
+    var Fixture1 = Tamotsu.Table.define({ sheetName: 'Agents' });
+    var Fixture2 = Tamotsu.Table.define({ sheetName: 'No data' });
+    deepEqual(['#', 'First Name', 'Last Name', 'Gender'], Fixture1.columns());
+    deepEqual(['#', 'Attr'], Fixture2.columns());
+  });
+
   test('columnIndexOf', function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
     deepEqual(3, Fixture.columnIndexOf('Gender'));
@@ -89,7 +96,7 @@ var cases_ = function() {
   });
   
   test('create', function() {
-    useFixture_('Agents', function(sheet) {
+    withRollback_('Agents', function(sheet) {
       var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
       var fixture = new Fixture({ 'First Name': 'Morgan', 'Last Name': 'Grimes' });
       fixture.save();
@@ -102,7 +109,7 @@ var cases_ = function() {
   });
   
   test('update', function() {
-    useFixture_('Agents', function(sheet) {
+    withRollback_('Agents', function(sheet) {
       var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
       var fixture = Fixture.first();
       fixture['First Name'] = 'Johnny';
@@ -115,7 +122,7 @@ var cases_ = function() {
   });
   
   test('destroy', function() {
-    useFixture_('Agents', function(sheet) {
+    withRollback_('Agents', function(sheet) {
       var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
       var fixture = Fixture.first();
       fixture.destroy();
@@ -165,7 +172,7 @@ var cases_ = function() {
   });
   
   test('where then update', function() {
-    useFixture_('Agents', function(sheet) {
+    withRollback_('Agents', function(sheet) {
       var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
       var fixture = Fixture
         .where(function(agent) { return agent['Gender'] === 'Female'; })
