@@ -49,7 +49,7 @@ var cases_ = function() {
     equal(fixture['Last Name'], 'Bartowski');
     equal(fixture['Gender'], 'Male');
     equal(fixture['Salary'], 100);
-    equal(fixture.row, 2);
+    equal(fixture.row_, 2);
   });
   
   test('first with no records', function() {
@@ -65,7 +65,7 @@ var cases_ = function() {
     equal(fixture['Last Name'], 'Casey');
     equal(fixture['Gender'], 'Male');
     equal(fixture['Salary'], 200);
-    equal(fixture.row, 4);
+    equal(fixture.row_, 4);
   });
   
   test('last with no records', function() {
@@ -81,7 +81,7 @@ var cases_ = function() {
     equal(fixture['Last Name'], 'Walker');
     equal(fixture['Gender'], 'Female');
     equal(fixture['Salary'], 300);
-    equal(fixture.row, 3);
+    equal(fixture.row_, 3);
   });
   
   test('find with invalid id', function() {
@@ -98,7 +98,7 @@ var cases_ = function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
     Fixture.all().forEach(function(record, i) {
       equal(record['#'], i + 1);
-      equal(record.row, i + 2);
+      equal(record.row_, i + 2);
     });
   });
   
@@ -169,7 +169,7 @@ var cases_ = function() {
       equal(fixture['Last Name'], 'Walker')
       equal(fixture['Gender'], 'Female')
       equal(fixture['Salary'], 300)
-      equal(fixture.row, 2)
+      equal(fixture.row_, 2)
     });
   });
   
