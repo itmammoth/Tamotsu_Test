@@ -21,13 +21,13 @@ var cases_ = function() {
 
   test('columns', function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
-    deepEqual(['#', 'First Name', 'Last Name', 'Gender'], Fixture.columns());
+    deepEqual(['#', 'First Name', 'Last Name', 'Gender', 'Salary'], Fixture.columns());
   });
 
   test('columns by cache', function() {
     var Fixture1 = Tamotsu.Table.define({ sheetName: 'Agents' });
     var Fixture2 = Tamotsu.Table.define({ sheetName: 'No data' });
-    deepEqual(['#', 'First Name', 'Last Name', 'Gender'], Fixture1.columns());
+    deepEqual(['#', 'First Name', 'Last Name', 'Gender', 'Salary'], Fixture1.columns());
     deepEqual(['#', 'Attr'], Fixture2.columns());
   });
 
@@ -48,6 +48,7 @@ var cases_ = function() {
     equal('Charles',   fixture['First Name']);
     equal('Bartowski', fixture['Last Name']);
     equal('Male',      fixture['Gender']);
+    equal(100,         fixture['Salary']);
   });
   
   test('first with no records', function() {
@@ -62,6 +63,7 @@ var cases_ = function() {
     equal('John',  fixture['First Name']);
     equal('Casey', fixture['Last Name']);
     equal('Male',  fixture['Gender']);
+    equal(200,     fixture['Salary']);
   });
   
   test('last with no records', function() {
@@ -86,6 +88,11 @@ var cases_ = function() {
     deepEqual(['Bartowski', 'Walker', 'Casey'], Fixture.pluck('Last Name'));
   });
   
+  test('sum', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    deepEqual(600, Fixture.sum('Salary'));
+  });
+  
   test('new', function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
     var fixture = new Fixture({ 'First Name': 'Johnny', 'Last Name': 'Rotten', 'Invalid attr': 'ignore it' });
@@ -100,11 +107,12 @@ var cases_ = function() {
       var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
       var fixture = new Fixture({ 'First Name': 'Morgan', 'Last Name': 'Grimes' });
       fixture.save();
-      var values = sheet.getRange('A5:D5').getValues()[0];
+      var values = sheet.getRange('A5:E5').getValues()[0];
       equal(4, values[0]);
       equal('Morgan', values[1]);
       equal('Grimes', values[2]);
       equal('',       values[3]);
+      equal('',       values[4]);
     });
   });
   
@@ -131,6 +139,7 @@ var cases_ = function() {
       equal('Sarah',  fixture['First Name'])
       equal('Walker', fixture['Last Name'])
       equal('Female', fixture['Gender'])
+      equal(300,      fixture['Salary'])
     });
   });
   
@@ -171,6 +180,14 @@ var cases_ = function() {
     deepEqual(['Male', 'Male'], genders);
   });
   
+  test('where then sum', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    var total = Fixture
+      .where(function(agent) { return agent['Gender'] === 'Male'; })
+      .sum('Salary');
+    equal(300, total);
+  });
+  
   test('where then update', function() {
     withRollback_('Agents', function(sheet) {
       var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
@@ -205,7 +222,7 @@ var cases_ = function() {
   test('order', function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
     var fixtures = Fixture
-      .order(function(t1, t2) { return t1['First Name'] < t2['First Name'] ? -1 : 1; })
+      .order(function(t1, t2) { return t1['Salary'] < t2['Salary'] ? -1 : 1; })
       .all();
     equal(3, fixtures.length);
     equal('Charles', fixtures[0]['First Name']);
