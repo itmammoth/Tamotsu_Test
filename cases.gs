@@ -49,6 +49,7 @@ var cases_ = function() {
     equal(fixture['Last Name'], 'Bartowski');
     equal(fixture['Gender'], 'Male');
     equal(fixture['Salary'], 100);
+    equal(fixture.row, 2);
   });
   
   test('first with no records', function() {
@@ -64,6 +65,7 @@ var cases_ = function() {
     equal(fixture['Last Name'], 'Casey');
     equal(fixture['Gender'], 'Male');
     equal(fixture['Salary'], 200);
+    equal(fixture.row, 4);
   });
   
   test('last with no records', function() {
@@ -71,16 +73,33 @@ var cases_ = function() {
     equal(Fixture.last(), null);
   });
   
+  test('find', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    var fixture = Fixture.find(2);
+    equal(fixture['#'], 2);
+    equal(fixture['First Name'], 'Sarah');
+    equal(fixture['Last Name'], 'Walker');
+    equal(fixture['Gender'], 'Female');
+    equal(fixture['Salary'], 300);
+    equal(fixture.row, 3);
+  });
+  
+  test('find with invalid id', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    try {
+      var fixture = Fixture.find(999);
+      equal(1, 2); // for failure
+    } catch (e) {
+      equal(e, 'Record not found [id=999]');
+    }
+  });
+  
   test('all', function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
     Fixture.all().forEach(function(record, i) {
       equal(record['#'], i + 1);
+      equal(record.row, i + 2);
     });
-  });
-  
-  test('all with no records', function() {
-    var Fixture = Tamotsu.Table.define({ sheetName: 'No data' });
-    deepEqual(Fixture.all(), []);
   });
   
   test('pluck', function() {
@@ -140,6 +159,7 @@ var cases_ = function() {
       equal(fixture['Last Name'], 'Walker')
       equal(fixture['Gender'], 'Female')
       equal(fixture['Salary'], 300)
+      equal(fixture.row, 2)
     });
   });
   
