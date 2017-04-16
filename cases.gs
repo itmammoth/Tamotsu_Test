@@ -227,6 +227,13 @@ var cases_ = function() {
     equal(fixtures[0]['First Name'], 'Charles');
   });
   
+  test('where with object condition', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    var fixtures = Fixture.where({ 'Gender': 'Male', 'Last Name': 'Bartowski' }).all();
+    equal(fixtures.length, 1);
+    equal(fixtures[0]['First Name'], 'Charles');
+  });
+  
   test('where then pluck', function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
     var genders = Fixture
