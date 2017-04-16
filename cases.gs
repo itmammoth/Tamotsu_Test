@@ -3,16 +3,22 @@ var cases_ = function() {
   
   test('define', function() {
     var Fixture1 = Tamotsu.Table.define({ sheetName: 'Agents' });
-    equal(Fixture1.sheet.getName(), 'Agents');
+    equal(Fixture1.sheetName, 'Agents');
     var Fixture2 = Tamotsu.Table.define({ sheetName: 'No data' });
-    equal(Fixture2.sheet.getName(), 'No data');
+    equal(Fixture2.sheetName, 'No data');
   });
   
-  test('define with mixin option', function() {
+  test('define with class properties', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents', something: 'Something' });
+    equal(Fixture.something, 'Something');
+  });
+  
+  test('define with instance properties', function() {
     var Fixture = Tamotsu.Table.define({
       sheetName: 'Agents',
-      mixin: {
-        fullName: function() { return this['First Name'] + ' ' + this['Last Name']; },
+    }, {
+      fullName: function() {
+        return this['First Name'] + ' ' + this['Last Name'];
       },
     });
     var fixture = Fixture.first();
@@ -94,6 +100,11 @@ var cases_ = function() {
     }
   });
   
+  test('find with not "#" column', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Other id', idColumn: 'id' });
+    equal(Fixture.find(3)['country'], 'U.K.');
+  });
+  
   test('all', function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
     Fixture.all().forEach(function(record, i) {
@@ -129,6 +140,21 @@ var cases_ = function() {
     equal(fixture['Last Name'], 'Woodcomb');
     equal(fixture['Gender'], undefined);
     equal(fixture['Invalid attr'], undefined);
+  });
+  
+  test('validate', function() {
+    withRollback_('Agents', function(sheet) {
+      var Fixture = Tamotsu.Table.define({
+        sheetName: sheet.getName()
+      }, {
+        validate: function() {
+          if (!this['First Name']) this.errors['First Name'] = "can't be blank";
+        },
+      });
+      var fixture = new Fixture();
+      equal(fixture.save(), false);
+      equal(fixture.errors['First Name'], "can't be blank");
+    });
   });
   
   test('create', function() {
