@@ -308,4 +308,31 @@ var cases_ = function() {
     equal(fixtures[1]['First Name'], 'John');
     equal(fixtures[2]['First Name'], 'Sarah');
   });
+  
+  test('order with string comparator as asc', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    var fixtures = Fixture.order('Salary').all();
+    equal(3, fixtures.length);
+    equal(fixtures[0]['First Name'], 'Charles');
+    equal(fixtures[1]['First Name'], 'John');
+    equal(fixtures[2]['First Name'], 'Sarah');
+  });
+  
+  test('order with string comparator as desc', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    var fixtures = Fixture.order('First Name DESC').all();
+    equal(3, fixtures.length);
+    equal(fixtures[0]['First Name'], 'Sarah');
+    equal(fixtures[1]['First Name'], 'John');
+    equal(fixtures[2]['First Name'], 'Charles');
+  });
+  
+  test('order with string comparator as combined', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    var fixtures = Fixture.order('Gender desc, Salary DESC').all();
+    equal(3, fixtures.length);
+    equal(fixtures[0]['First Name'], 'John');
+    equal(fixtures[1]['First Name'], 'Charles');
+    equal(fixtures[2]['First Name'], 'Sarah');
+  });
 }
