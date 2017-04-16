@@ -142,12 +142,28 @@ var cases_ = function() {
     equal(fixture['Invalid attr'], undefined);
   });
   
-  test('validate', function() {
+  test('validate on', function() {
+    var Fixture1 = Tamotsu.Table.define({ sheetName: 'Agents' }, {
+      validate: function(on) {
+        equal(on, 'create');
+      },
+    });
+    Fixture1.create({});
+    
+    var Fixture2 = Tamotsu.Table.define({ sheetName: 'Agents' }, {
+      validate: function(on) {
+        equal(on, 'update');
+      },
+    });
+    Fixture2.first().save();
+  });
+  
+  test('validate as save', function() {
     withRollback_('Agents', function(sheet) {
       var Fixture = Tamotsu.Table.define({
         sheetName: sheet.getName()
       }, {
-        validate: function() {
+        validate: function(on) {
           if (!this['First Name']) this.errors['First Name'] = "can't be blank";
         },
       });
@@ -157,7 +173,33 @@ var cases_ = function() {
     });
   });
   
+  test('validate as create', function() {
+    withRollback_('Agents', function(sheet) {
+      var Fixture = Tamotsu.Table.define({
+        sheetName: sheet.getName()
+      }, {
+        validate: function(on) {
+          if (!this['First Name']) this.errors['First Name'] = "can't be blank";
+        },
+      });
+      equal(Fixture.create({}), false);
+    });
+  });
+  
   test('create', function() {
+    withRollback_('Agents', function(sheet) {
+      var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
+      var fixture = Fixture.create({ 'First Name': 'Morgan', 'Last Name': 'Grimes' });
+      var values = sheet.getRange('A5:E5').getValues()[0];
+      equal(values[0], 4);
+      equal(values[1], 'Morgan');
+      equal(values[2], 'Grimes');
+      equal(values[3], '');
+      equal(values[4], '');
+    });
+  });
+  
+  test('save as create', function() {
     withRollback_('Agents', function(sheet) {
       var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
       var fixture = new Fixture({ 'First Name': 'Morgan', 'Last Name': 'Grimes' });
@@ -171,7 +213,7 @@ var cases_ = function() {
     });
   });
   
-  test('update', function() {
+  test('save as update', function() {
     withRollback_('Agents', function(sheet) {
       var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
       var fixture = Fixture.first();
