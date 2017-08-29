@@ -143,19 +143,21 @@ var cases_ = function() {
   });
   
   test('validate on', function() {
-    var Fixture1 = Tamotsu.Table.define({ sheetName: 'Agents' }, {
-      validate: function(on) {
-        equal(on, 'create');
-      },
+    withRollback_('Agents', function(sheet) {
+      var Fixture1 = Tamotsu.Table.define({ sheetName: sheet.getName() }, {
+        validate: function(on) {
+          equal(on, 'create');
+        },
+      });
+      Fixture1.create({});
+      
+      var Fixture2 = Tamotsu.Table.define({ sheetName: sheet.getName() }, {
+        validate: function(on) {
+          equal(on, 'update');
+        },
+      });
+      Fixture2.first().save();
     });
-    Fixture1.create({});
-    
-    var Fixture2 = Tamotsu.Table.define({ sheetName: 'Agents' }, {
-      validate: function(on) {
-        equal(on, 'update');
-      },
-    });
-    Fixture2.first().save();
   });
   
   test('validate as save', function() {
@@ -190,6 +192,7 @@ var cases_ = function() {
     withRollback_('Agents', function(sheet) {
       var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
       var fixture = Fixture.create({ 'First Name': 'Morgan', 'Last Name': 'Grimes' });
+      equal(fixture.row_, 5);
       var values = sheet.getRange('A5:E5').getValues()[0];
       equal(values[0], 4);
       equal(values[1], 'Morgan');
