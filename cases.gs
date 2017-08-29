@@ -202,6 +202,17 @@ var cases_ = function() {
     });
   });
   
+  test('create into empty table', function() {
+    withRollback_('No data', function(sheet) {
+      var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
+      var fixture = Fixture.create({ 'Attr': 'Test' });
+      equal(fixture.row_, 2);
+      var values = sheet.getRange('A2:B2').getValues()[0];
+      equal(values[0], 1);
+      equal(values[1], 'Test');
+    });
+  });
+  
   test('save as create', function() {
     withRollback_('Agents', function(sheet) {
       var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
