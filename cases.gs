@@ -193,6 +193,10 @@ var cases_ = function() {
       var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
       var fixture = Fixture.create({ 'First Name': 'Morgan', 'Last Name': 'Grimes', 'Salary': 0 });
       strictEqual(fixture.row_, 5);
+      strictEqual(fixture['#'], 4);
+      strictEqual(fixture['First Name'], 'Morgan');
+      strictEqual(fixture['Last Name'], 'Grimes');
+      strictEqual(fixture['Salary'], 0);
       var values = sheet.getRange('A5:E5').getValues()[0];
       strictEqual(values[0], 4);
       strictEqual(values[1], 'Morgan');
