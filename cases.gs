@@ -24,6 +24,14 @@ var cases_ = function() {
     var fixture = Fixture.first();
     strictEqual(fixture.fullName(), 'Charles Bartowski');
   });
+  
+  test('define with a sheet having a column named "class"', function() {
+    var Fixture = Tamotsu.Table.define({
+      sheetName: 'class',
+    });
+    var fixture = Fixture.first();
+    strictEqual(fixture['class'], '');
+  });
 
   test('columns', function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
