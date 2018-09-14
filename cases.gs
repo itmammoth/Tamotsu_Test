@@ -225,6 +225,25 @@ var cases_ = function() {
     });
   });
   
+  test('create with a given id value', function() {
+    withRollback_('Agents', function(sheet) {
+      var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
+      var fixture = Fixture.create({ '#': 999, 'First Name': 'Morgan', 'Last Name': 'Grimes', 'Gender': 'Male', 'Salary': 50 });
+      strictEqual(fixture.row_, 5);
+      strictEqual(fixture['#'], 999);
+      strictEqual(fixture['First Name'], 'Morgan');
+      strictEqual(fixture['Last Name'], 'Grimes');
+      strictEqual(fixture['Gender'], 'Male');
+      strictEqual(fixture['Salary'], 50);
+      var values = sheet.getRange('A5:E5').getValues()[0];
+      strictEqual(values[0], 999);
+      strictEqual(values[1], 'Morgan');
+      strictEqual(values[2], 'Grimes');
+      strictEqual(values[3], 'Male');
+      strictEqual(values[4], 50);
+    });
+  });
+  
   test('save as create', function() {
     withRollback_('Agents', function(sheet) {
       var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
