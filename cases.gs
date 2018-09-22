@@ -32,7 +32,16 @@ var cases_ = function() {
     var fixture = Fixture.first();
     strictEqual(fixture['class'], '');
   });
-
+  
+  test('define with a sheet having non-autoincrement id', function() {
+    withRollback_('String id', function(sheet) {
+      var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName(), autoIncrement: false });
+      var fixture = Fixture.create({ '#': 'ccc', 'Food': 'Tempura' });
+      strictEqual(fixture['#'], 'ccc');
+      strictEqual(fixture['Food'], 'Tempura');
+    });
+  });
+  
   test('columns', function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
     deepEqual(Fixture.columns(), ['#', 'First Name', 'Last Name', 'Gender', 'Salary']);
@@ -111,6 +120,11 @@ var cases_ = function() {
   test('find by not "#" column', function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Other id', idColumn: 'id' });
     strictEqual(Fixture.find(3)['country'], 'U.K.');
+  });
+  
+  test('find by string id', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'String id' });
+    strictEqual(Fixture.find('aaa')['Food'], 'Sushi');
   });
   
   test('all', function() {
@@ -193,6 +207,16 @@ var cases_ = function() {
         },
       });
       strictEqual(Fixture.create({}), false);
+    });
+  });
+  
+  test('validate string id presence', function() {
+    withRollback_('String id', function(sheet) {
+      var Fixture = Tamotsu.Table.define({
+        sheetName: sheet.getName(),
+        autoIncrement: false,
+      });
+      strictEqual(Fixture.create({ 'Food': 'Tempura' }), false);
     });
   });
   
