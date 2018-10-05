@@ -310,6 +310,17 @@ var cases_ = function() {
     });
   });
   
+  test('attributes', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    var attributes = Fixture.first().attributes();
+    strictEqual(attributes['#'], 1);
+    strictEqual(attributes['First Name'], 'Charles');
+    strictEqual(attributes['Last Name'], 'Bartowski');
+    strictEqual(attributes['Gender'], 'Male');
+    strictEqual(attributes['Salary'], 100);
+    strictEqual(attributes['row_'], undefined);
+  });
+  
   test('where', function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
     var fixtures = Fixture
