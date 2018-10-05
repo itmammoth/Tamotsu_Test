@@ -295,6 +295,25 @@ var cases_ = function() {
     });
   });
   
+  test('update attributes', function() {
+    withRollback_('Agents', function(sheet) {
+      var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
+      var fixture = Fixture.first();
+      strictEqual(fixture.updateAttributes({ 'First Name': 'Chuck', 'Salary': 500 }), true);
+      strictEqual(fixture['#'], 1);
+      strictEqual(fixture['First Name'], 'Chuck');
+      strictEqual(fixture['Last Name'], 'Bartowski');
+      strictEqual(fixture['Gender'], 'Male');
+      strictEqual(fixture['Salary'], 500);
+      var values = sheet.getRange('A2:E2').getValues()[0];
+      strictEqual(values[0], 1);
+      strictEqual(values[1], 'Chuck');
+      strictEqual(values[2], 'Bartowski');
+      strictEqual(values[3], 'Male');
+      strictEqual(values[4], 500);
+    });
+  });
+  
   test('destroy', function() {
     withRollback_('Agents', function(sheet) {
       var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
