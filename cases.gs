@@ -329,9 +329,9 @@ var cases_ = function() {
     });
   });
   
-  test('attributes', function() {
+  test('getAttributes', function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
-    var attributes = Fixture.first().attributes();
+    var attributes = Fixture.first().getAttributes();
     strictEqual(attributes['#'], 1);
     strictEqual(attributes['First Name'], 'Charles');
     strictEqual(attributes['Last Name'], 'Bartowski');
