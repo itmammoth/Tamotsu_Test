@@ -268,6 +268,127 @@ var cases_ = function() {
     });
   });
   
+  test('createOrUpdate with a record without id', function() {
+    withRollback_('Agents', function(sheet) {
+      var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
+      var fixture = new Fixture({ 'First Name': 'Morgan', 'Last Name': 'Grimes', 'Gender': 'Male', 'Salary': 50 });
+      strictEqual(Fixture.createOrUpdate(fixture), fixture);
+      strictEqual(fixture.row_, 5);
+      strictEqual(fixture['#'], 4);
+      strictEqual(fixture['First Name'], 'Morgan');
+      strictEqual(fixture['Last Name'], 'Grimes');
+      strictEqual(fixture['Gender'], 'Male');
+      strictEqual(fixture['Salary'], 50);
+      var values = sheet.getRange('A5:E5').getValues()[0];
+      strictEqual(values[0], 4);
+      strictEqual(values[1], 'Morgan');
+      strictEqual(values[2], 'Grimes');
+      strictEqual(values[3], 'Male');
+      strictEqual(values[4], 50);
+    });
+  });
+  
+  test('createOrUpdate with attributes without id', function() {
+    withRollback_('Agents', function(sheet) {
+      var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
+      var attributes = { 'First Name': 'Morgan', 'Last Name': 'Grimes', 'Gender': 'Male', 'Salary': 50 };
+      var fixture = Fixture.createOrUpdate(attributes);
+      strictEqual(fixture.row_, 5);
+      strictEqual(fixture['#'], 4);
+      strictEqual(fixture['First Name'], 'Morgan');
+      strictEqual(fixture['Last Name'], 'Grimes');
+      strictEqual(fixture['Gender'], 'Male');
+      strictEqual(fixture['Salary'], 50);
+      var values = sheet.getRange('A5:E5').getValues()[0];
+      strictEqual(values[0], 4);
+      strictEqual(values[1], 'Morgan');
+      strictEqual(values[2], 'Grimes');
+      strictEqual(values[3], 'Male');
+      strictEqual(values[4], 50);
+    });
+  });
+  
+  test('createOrUpdate with a record with not existing id', function() {
+    withRollback_('Agents', function(sheet) {
+      var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
+      var fixture = new Fixture({ '#': 999, 'First Name': 'Morgan', 'Last Name': 'Grimes', 'Gender': 'Male', 'Salary': 50 });
+      strictEqual(Fixture.createOrUpdate(fixture), fixture);
+      strictEqual(fixture.row_, 5);
+      strictEqual(fixture['#'], 999);
+      strictEqual(fixture['First Name'], 'Morgan');
+      strictEqual(fixture['Last Name'], 'Grimes');
+      strictEqual(fixture['Gender'], 'Male');
+      strictEqual(fixture['Salary'], 50);
+      var values = sheet.getRange('A5:E5').getValues()[0];
+      strictEqual(values[0], 999);
+      strictEqual(values[1], 'Morgan');
+      strictEqual(values[2], 'Grimes');
+      strictEqual(values[3], 'Male');
+      strictEqual(values[4], 50);
+    });
+  });
+  
+  test('createOrUpdate with attributes with not existing id', function() {
+    withRollback_('Agents', function(sheet) {
+      var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
+      var attributes = { '#': 999, 'First Name': 'Morgan', 'Last Name': 'Grimes', 'Gender': 'Male', 'Salary': 50 };
+      var fixture = Fixture.createOrUpdate(attributes);
+      strictEqual(fixture.row_, 5);
+      strictEqual(fixture['#'], 999);
+      strictEqual(fixture['First Name'], 'Morgan');
+      strictEqual(fixture['Last Name'], 'Grimes');
+      strictEqual(fixture['Gender'], 'Male');
+      strictEqual(fixture['Salary'], 50);
+      var values = sheet.getRange('A5:E5').getValues()[0];
+      strictEqual(values[0], 999);
+      strictEqual(values[1], 'Morgan');
+      strictEqual(values[2], 'Grimes');
+      strictEqual(values[3], 'Male');
+      strictEqual(values[4], 50);
+    });
+  });
+  
+  test('createOrUpdate with a record with existing id', function() {
+    withRollback_('Agents', function(sheet) {
+      var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
+      var fixture = new Fixture({ '#': 1, 'First Name': 'Morgan', 'Last Name': 'Grimes', 'Gender': 'Male', 'Salary': 50 });
+      strictEqual(Fixture.createOrUpdate(fixture), true);
+      strictEqual(fixture.row_, 2);
+      strictEqual(fixture['#'], 1);
+      strictEqual(fixture['First Name'], 'Morgan');
+      strictEqual(fixture['Last Name'], 'Grimes');
+      strictEqual(fixture['Gender'], 'Male');
+      strictEqual(fixture['Salary'], 50);
+      var values = sheet.getRange('A2:E2').getValues()[0];
+      strictEqual(values[0], 1);
+      strictEqual(values[1], 'Morgan');
+      strictEqual(values[2], 'Grimes');
+      strictEqual(values[3], 'Male');
+      strictEqual(values[4], 50);
+    });
+  });
+  
+  test('createOrUpdate with attributes with existing id', function() {
+    withRollback_('Agents', function(sheet) {
+      var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
+      var attributes = { '#': 1, 'First Name': 'Morgan', 'Last Name': 'Grimes', 'Gender': 'Male', 'Salary': 50 };
+      strictEqual(Fixture.createOrUpdate(attributes), true);
+      var fixture = Fixture.find(1);
+      strictEqual(fixture.row_, 2);
+      strictEqual(fixture['#'], 1);
+      strictEqual(fixture['First Name'], 'Morgan');
+      strictEqual(fixture['Last Name'], 'Grimes');
+      strictEqual(fixture['Gender'], 'Male');
+      strictEqual(fixture['Salary'], 50);
+      var values = sheet.getRange('A2:E2').getValues()[0];
+      strictEqual(values[0], 1);
+      strictEqual(values[1], 'Morgan');
+      strictEqual(values[2], 'Grimes');
+      strictEqual(values[3], 'Male');
+      strictEqual(values[4], 50);
+    });
+  });
+  
   test('save as create', function() {
     withRollback_('Agents', function(sheet) {
       var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
