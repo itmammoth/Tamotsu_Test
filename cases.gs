@@ -70,7 +70,17 @@ var cases_ = function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents shifted', rowShift: 2, columnShift: 1 });
     deepEqual(Fixture.baseRange().getA1Notation(), 'B3');
   });
-
+  
+  test('lastRange', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    deepEqual(Fixture.lastRange().getA1Notation(), 'E4');
+  });
+  
+  test('lastRange with row & column shift', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents shifted', rowShift: 2, columnShift: 1 });
+    deepEqual(Fixture.lastRange().getA1Notation(), 'F6');
+  });
+  
   test('columns', function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
     deepEqual(Fixture.columns(), ['#', 'First Name', 'Last Name', 'Gender', 'Salary']);
