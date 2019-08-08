@@ -60,6 +60,16 @@ var cases_ = function() {
       strictEqual(fixture['Food'], 'Tempura');
     });
   });
+  
+  test('baseRange', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
+    deepEqual(Fixture.baseRange().getA1Notation(), 'A1');
+  });
+  
+  test('baseRange with row & column shift', function() {
+    var Fixture = Tamotsu.Table.define({ sheetName: 'Agents shifted', rowShift: 2, columnShift: 1 });
+    deepEqual(Fixture.baseRange().getA1Notation(), 'B3');
+  });
 
   test('columns', function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
