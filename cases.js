@@ -363,6 +363,39 @@ var cases_ = function() {
     });
   });
 
+  test('batchCreate', function() {
+    withRollback_('Agents', function(sheet) {
+      var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
+      var fixtures = Fixture.batchCreate([
+        { 'First Name': 'Morgan', 'Last Name': 'Grimes', 'Gender': 'Male', 'Salary': 50 },
+        { 'First Name': 'Bryce', 'Last Name': 'Larkin', 'Gender': 'Male', 'Salary': 400 },
+      ]);
+      strictEqual(fixtures[0].row_, 5);
+      strictEqual(fixtures[0]['#'], 4);
+      strictEqual(fixtures[0]['First Name'], 'Morgan');
+      strictEqual(fixtures[0]['Last Name'], 'Grimes');
+      strictEqual(fixtures[0]['Gender'], 'Male');
+      strictEqual(fixtures[0]['Salary'], 50);
+      strictEqual(fixtures[1].row_, 6);
+      strictEqual(fixtures[1]['#'], 5);
+      strictEqual(fixtures[1]['First Name'], 'Bryce');
+      strictEqual(fixtures[1]['Last Name'], 'Larkin');
+      strictEqual(fixtures[1]['Gender'], 'Male');
+      strictEqual(fixtures[1]['Salary'], 400);
+      var values = sheet.getRange('A5:E6').getValues();
+      strictEqual(values[0][0], 4);
+      strictEqual(values[0][1], 'Morgan');
+      strictEqual(values[0][2], 'Grimes');
+      strictEqual(values[0][3], 'Male');
+      strictEqual(values[0][4], 50);
+      strictEqual(values[1][0], 5);
+      strictEqual(values[1][1], 'Bryce');
+      strictEqual(values[1][2], 'Larkin');
+      strictEqual(values[1][3], 'Male');
+      strictEqual(values[1][4], 400);
+    });
+  });
+
   test('createOrUpdate with a record without id', function() {
     withRollback_('Agents', function(sheet) {
       var Fixture = Tamotsu.Table.define({ sheetName: sheet.getName() });
@@ -544,6 +577,7 @@ var cases_ = function() {
       strictEqual(fixture.row_, 2)
     });
   });
+
   test('getAttributes', function() {
     var Fixture = Tamotsu.Table.define({ sheetName: 'Agents' });
     var attributes = Fixture.first().getAttributes();
